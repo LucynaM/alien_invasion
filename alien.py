@@ -4,7 +4,7 @@ from pygame.sprite import Sprite
 class Alien(Sprite):
     """single alien of the fleet"""
     def __init__(self, ai_settings, screen):
-        """launch an alien and define its default position"""
+        """Initialize an alien and define its default position"""
         super().__init__()
         self.screen = screen
         self.ai_settings = ai_settings

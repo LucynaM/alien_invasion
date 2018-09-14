@@ -2,6 +2,7 @@ import sys
 import pygame
 from bullet import Bullet
 from alien import Alien
+from time import sleep
 
 
 # bullet functionalities
@@ -99,7 +100,7 @@ def check_events(ai_settings, screen, ship, bullets):
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
 
-#collision
+#collision functions
 def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
     """Respond to bullet-alien collisions"""
     # Remove any bullets and aliens that have collided.
@@ -109,6 +110,26 @@ def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
         # get rid of existing bullets and create new alien fleet
         bullets.empty()
         create_fleet(ai_settings, screen, ship, aliens)
+
+
+def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
+    """Respond to ship being hit by alien."""
+    if stats.ships_left > 0:
+        # decrease value kept in ships_left
+        stats.ships_left -= 1
+
+        # remove content of aliens and bullets groups
+        aliens.empty()
+        bullets.empty()
+
+        # Create new fleet and center ship position
+        create_fleet(ai_settings, screen, ship, aliens)
+        ship.center_ship()
+
+        # Pause
+        sleep(0.5)
+    else:
+        stats.game_active = False
 
 
 #update functionalites
@@ -122,10 +143,13 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
     check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
 
 
-def update_aliens(ai_settings, aliens):
+def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
     """Check screen edges and update aliens position"""
     check_fleet_edges(ai_settings, aliens)
     aliens.update()
+    #Detect collision between alien and ship
+    if pygame.sprite.spritecollideany(ship, aliens):
+        ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
 
 
 def update_screen(ai_settings, screen, ship, aliens, bullets):

@@ -2,7 +2,7 @@ import pygame
 
 class Ship():
     def __init__(self, screen, ai_settings):
-        """Set up spaceship and its start position"""
+        """Initialize spaceship and its start position"""
         self.screen = screen
         self.ai_settings = ai_settings
 
@@ -21,6 +21,10 @@ class Ship():
         # constant movement of the ship
         self.moving_right = False
         self.moving_left = False
+
+    def center_ship(self):
+        self.center = self.screen_rect.centerx
+
 
     def update(self):
         """Update the position of the ship according to movement parameter value"""
