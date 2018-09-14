@@ -68,6 +68,9 @@ def change_fleet_direction(ai_settings, aliens):
 
 # start game options
 def start_game(ai_settings, screen, stats, ship, aliens, bullets):
+    #reset game settings
+    ai_settings.initialize_dynamic_settings()
+
     #hide mouse cursor
     pygame.mouse.set_visible(False)
 
@@ -140,6 +143,7 @@ def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
     if len(aliens) == 0:
         # get rid of existing bullets and create new alien fleet
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(ai_settings, screen, ship, aliens)
 
 
