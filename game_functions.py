@@ -65,7 +65,7 @@ def change_fleet_direction(ai_settings, aliens):
 
 #event functionalites
 def check_keydown_events(event, ai_settings, screen, ship, bullets):
-    """React keydown event"""
+    """Response on keydown events"""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
     elif event.key == pygame.K_LEFT:
