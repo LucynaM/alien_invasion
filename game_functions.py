@@ -66,28 +66,33 @@ def change_fleet_direction(ai_settings, aliens):
     ai_settings.fleet_direction *= -1
 
 
+# start game options
+def start_game(ai_settings, screen, stats, ship, aliens, bullets):
+    #hide mouse cursor
+    pygame.mouse.set_visible(False)
+
+    stats.reset_stats()
+    stats.game_active = True
+
+    #remove content of aliens and bullets groups
+    aliens.empty()
+    bullets.empty()
+
+    #create new fleet and center ship position
+    create_fleet(ai_settings, screen, ship, aliens)
+    ship.center_ship()
+
+
 # play_button functionalities
 def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y):
     """launch new game after clicking 'play' button"""
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_clicked and not stats.game_active:
-        # hide mouse cursor
-        pygame.mouse.set_visible(False)
-
-        stats.reset_stats()
-        stats.game_active = True
-
-        #remove content of aliens and bullets groups
-        aliens.empty()
-        bullets.empty()
-
-        # create new fleet and center ship position
-        create_fleet(ai_settings, screen, ship, aliens)
-        ship.center_ship()
+        start_game(ai_settings, screen, stats, ship, aliens, bullets)
 
 
 #event functionalites
-def check_keydown_events(event, ai_settings, screen, ship, bullets):
+def check_keydown_events(event, ai_settings, screen, ship, bullets, stats, aliens):
     """Respond to keydown presses"""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
@@ -97,6 +102,8 @@ def check_keydown_events(event, ai_settings, screen, ship, bullets):
         fire_bullet(ai_settings, screen, ship, bullets)
     elif event.key == pygame.K_q:
         sys.exit()
+    elif event.key == pygame.K_p:
+        start_game(ai_settings, screen, stats, ship, aliens, bullets)
 
 
 def check_keyup_events(event, ship):
@@ -118,7 +125,7 @@ def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
             check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y)
         # keydown event
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, ai_settings, screen, ship, bullets)
+            check_keydown_events(event, ai_settings, screen, ship, bullets, stats, aliens)
         # keyup event
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
@@ -157,6 +164,15 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
         pygame.mouse.set_visible(True)
 
 
+def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
+    """Check if any alien reached bottom of the screen"""
+    screen_rect = screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+            break
+
+
 #update functionalites
 def update_bullets(ai_settings, screen, ship, aliens, bullets):
     """Update bullets position and remove the out of screen ones"""
@@ -172,6 +188,7 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
     """Check screen edges and update aliens position"""
     check_fleet_edges(ai_settings, aliens)
     aliens.update()
+    check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
     #Detect collision between alien and ship
     if pygame.sprite.spritecollideany(ship, aliens):
         ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
