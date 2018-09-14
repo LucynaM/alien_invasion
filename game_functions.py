@@ -64,6 +64,7 @@ def change_fleet_direction(ai_settings, aliens):
     ai_settings.fleet_direction *= -1
 
 
+
 #event functionalites
 def check_keydown_events(event, ai_settings, screen, ship, bullets):
     """Respond to keydown presses"""
@@ -98,18 +99,27 @@ def check_events(ai_settings, screen, ship, bullets):
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
 
-
-#update functionalites
-def update_bullets(aliens, bullets):
-    """Update bullets position and remove the out of screen ones"""
-    # Respond to bullet-alien collisions
+#collision
+def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+    """Respond to bullet-alien collisions"""
     # Remove any bullets and aliens that have collided.
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
+    if len(aliens) == 0:
+        # get rid of existing bullets and create new alien fleet
+        bullets.empty()
+        create_fleet(ai_settings, screen, ship, aliens)
+
+
+#update functionalites
+def update_bullets(ai_settings, screen, ship, aliens, bullets):
+    """Update bullets position and remove the out of screen ones"""
 
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
 
 
 def update_aliens(ai_settings, aliens):
