@@ -6,7 +6,8 @@ from alien import Alien
 
 # bullet functionalities
 def fire_bullet(ai_settings, screen, ship, bullets):
-    # create new bullet and add it to bullets group
+    """Fire a bullet, if limit not reached yet."""
+    # Create a new bullet, add to bullets group.
     if len(bullets) < ai_settings.bullets_allowed:
         new_bullet = Bullet(ai_settings, screen, ship)
         bullets.add(new_bullet)
@@ -65,7 +66,7 @@ def change_fleet_direction(ai_settings, aliens):
 
 #event functionalites
 def check_keydown_events(event, ai_settings, screen, ship, bullets):
-    """Response on keydown events"""
+    """Respond to keydown presses"""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
     elif event.key == pygame.K_LEFT:
@@ -77,6 +78,7 @@ def check_keydown_events(event, ai_settings, screen, ship, bullets):
 
 
 def check_keyup_events(event, ship):
+    """Respond to key releases."""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = False
     elif event.key == pygame.K_LEFT:
@@ -98,8 +100,12 @@ def check_events(ai_settings, screen, ship, bullets):
 
 
 #update functionalites
-def update_bullets(bullets):
+def update_bullets(aliens, bullets):
     """Update bullets position and remove the out of screen ones"""
+    # Respond to bullet-alien collisions
+    # Remove any bullets and aliens that have collided.
+    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
