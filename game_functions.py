@@ -135,10 +135,14 @@ def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
 
 
 #collision functions
-def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Respond to bullet-alien collisions"""
     # Remove any bullets and aliens that have collided.
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if collisions:
+        for aliens in collisions.values():
+            stats.score += ai_settings.alien_points * len(aliens)
+            sb.prep_score()
 
     if len(aliens) == 0:
         # get rid of existing bullets and create new alien fleet
@@ -178,14 +182,14 @@ def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
 
 
 #update functionalites
-def update_bullets(ai_settings, screen, ship, aliens, bullets):
+def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Update bullets position and remove the out of screen ones"""
 
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+    check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets)
 
 
 def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
@@ -198,17 +202,20 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
         ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
 
 
-def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
     """Update screen state and display new screen"""
     # refresh screen while looping
     screen.fill(ai_settings.bg_color)
 
-    # redisplay all bullets under ship and alien layers
+    # redisplay all bullets above ship and alien layers
     for bullet in bullets.sprites():
         bullet.draw_bullet()
 
     ship.blitme()
+    #disply fleet of aliens
     aliens.draw(screen)
+    #display scoring information
+    sb.show_score()
 
     #display button only if game is inactive
     if not stats.game_active:
