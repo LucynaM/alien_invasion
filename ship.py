@@ -1,8 +1,11 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Ship():
+
+class Ship(Sprite):
     def __init__(self, screen, ai_settings):
         """Initialize spaceship and its start position"""
+        super(Ship, self).__init__()
         self.screen = screen
         self.ai_settings = ai_settings
 
@@ -15,12 +18,13 @@ class Ship():
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.bottom
 
-        # center point of the ship as a float number
+        # Store a decimal value for the ship's center
         self.center = float(self.rect.centerx)
 
-        # constant movement of the ship
+        # movement flags
         self.moving_right = False
         self.moving_left = False
+
 
     def center_ship(self):
         self.center = self.screen_rect.centerx
@@ -35,6 +39,7 @@ class Ship():
 
         # Update rect object according to self.center value
         self.rect.centerx = self.center
+
 
     def blitme(self):
         """Display the ship at its current position"""
