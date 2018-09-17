@@ -79,10 +79,7 @@ def start_game(ai_settings, screen, stats, sb, ship, aliens, bullets):
     stats.game_active = True
 
     # Reset scoreboard information
-    sb.prep_score()
-    sb.prep_high_score()
-    sb.prep_level()
-    sb.prep_ships()
+    sb.prep_images()
 
     #remove content of aliens and bullets groups
     aliens.empty()
@@ -111,6 +108,7 @@ def check_keydown_events(event, ai_settings, screen, sb, ship, bullets, stats, a
     elif event.key == pygame.K_SPACE:
         fire_bullet(ai_settings, screen, ship, bullets)
     elif event.key == pygame.K_q:
+        stats.high_score_write()
         sys.exit()
     elif event.key == pygame.K_p:
         start_game(ai_settings, screen, stats, sb, ship, aliens, bullets)
@@ -129,6 +127,7 @@ def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bull
     for event in pygame.event.get():
         # exit
         if event.type == pygame.QUIT:
+            stats.high_score_write()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -140,11 +139,23 @@ def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bull
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
 
+
 def check_high_score(stats, sb):
     """Check to see if there's a new high score"""
     if stats.score > stats.high_score:
         stats.high_score = stats.score
         sb.prep_high_score()
+
+
+def start_new_level(ai_settings, stats, sb, screen, ship, aliens):
+    """If the entire fleet is destroyed, start a new level"""
+    #  increase speed
+    ai_settings.increase_speed()
+    #  start a new level
+    stats.level += 1
+    sb.prep_level()
+    # create new alien fleet
+    create_fleet(ai_settings, screen, ship, aliens)
 
 
 # collision functions - start
@@ -162,13 +173,7 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, 
     if len(aliens) == 0:
         # If the entire fleet is destroyed, get rid of existing bullets
         bullets.empty()
-        #  increase speed
-        ai_settings.increase_speed()
-        #  start a new level
-        stats.level += 1
-        sb.prep_level()
-        # create new alien fleet
-        create_fleet(ai_settings, screen, ship, aliens)
+        start_new_level(ai_settings, stats, sb, screen, ship, aliens)
 
 
 def ship_hit(ai_settings, stats, sb, screen, ship, aliens, bullets):
@@ -193,7 +198,6 @@ def ship_hit(ai_settings, stats, sb, screen, ship, aliens, bullets):
     else:
         stats.game_active = False
         pygame.mouse.set_visible(True)
-        stats.high_score_write()
 
 
 def check_aliens_bottom(ai_settings, stats, sb, screen, ship, aliens, bullets):
