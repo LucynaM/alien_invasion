@@ -10,7 +10,8 @@ class GameStats():
         self.game_active = False
 
         # High score should never be reset
-        self.high_score = 0
+        self.high_score = self.high_score_read()
+
 
 
     def reset_stats(self):
@@ -18,3 +19,18 @@ class GameStats():
         self.ships_left = self.ai_settings.ship_limit
         self.score = 0
         self.level = 1
+
+
+    def high_score_read(self):
+        try:
+            with open('best_score_ever.txt') as file_object:
+                return int(file_object.read())
+        except FileNotFoundError:
+            return 0
+
+
+    def high_score_write(self):
+        with open('best_score_ever.txt', 'w') as file_object:
+            file_object.write(str(self.high_score))
+
+

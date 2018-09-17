@@ -193,31 +193,7 @@ def ship_hit(ai_settings, stats, sb, screen, ship, aliens, bullets):
     else:
         stats.game_active = False
         pygame.mouse.set_visible(True)
-
-
-def ship_hit(ai_settings, stats, sb, screen, ship, aliens, bullets):
-    """Respond to ship being hit by alien."""
-    if stats.ships_left > 0:
-        # Decrement ships_left.
-        stats.ships_left -= 1
-
-        # Update scoreboard.
-        sb.prep_ships()
-
-    else:
-        stats.game_active = False
-        pygame.mouse.set_visible(True)
-
-    # Empty the list of aliens and bullets.
-    aliens.empty()
-    bullets.empty()
-
-    # Create a new fleet, and center the ship.
-    create_fleet(ai_settings, screen, ship, aliens)
-    ship.center_ship()
-
-    # Pause.
-    sleep(0.5)
+        stats.high_score_write()
 
 
 def check_aliens_bottom(ai_settings, stats, sb, screen, ship, aliens, bullets):
